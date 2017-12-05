@@ -8,6 +8,6 @@ namespace TagsCloudVisualization.Infrastructure
 {
 	interface IPreProcessor
 	{
-		string[] PreProcess();
+		Word[] PreProcess();
 	}
 }

@@ -13,18 +13,17 @@ namespace TagsCloudVisualization
 		private List<Rectangle> InsertedRectangles { get; }
 		private Spiral Spiral { get; }
 
-		private string[] wordsIn;
+		private readonly Word[] wordsIn;
 		private IPreProcessor PreProcessor { get; }
-		private IImageConfig ImageConfig { get; }
 
 		private Point Center { get; }
 
-		public string[] GetWords() => wordsIn;
+		public Word[] GetWords() => wordsIn;
+
 		public CircularCloudLayouter(IPreProcessor preProcessor, IImageConfig imageConfig)
 		{
 			PreProcessor = preProcessor;
 			Center = imageConfig.CloudCenter;
-			ImageConfig = imageConfig;
 			Spiral = new Spiral();
 			InsertedRectangles = new List<Rectangle>();
 			wordsIn = PreProcessor.PreProcess();
@@ -34,22 +33,19 @@ namespace TagsCloudVisualization
 		{
 			using (var graphics = Graphics.FromImage(new Bitmap(1, 1)))
 			{
-				for (int i = 0; i < wordsIn.Length; i++)
+				foreach (var currentWord in wordsIn)
 				{
-					float fontSize = ImageConfig.MinAndMaxFonts[1] -
-								   (ImageConfig.MinAndMaxFonts[1] - ImageConfig.MinAndMaxFonts[0]) / (wordsIn.Length) * i;
-					var strSize = GetReactangleSize(wordsIn[i], fontSize, ImageConfig.WordsFont, graphics);
-					var rectSize = new Size(strSize.Width+1, strSize.Height+1);
+					var strSize = GetReactangleSize(currentWord.Value, currentWord.Font, graphics);
+					var rectSize = new Size(strSize.Width + 1, strSize.Height + 1);
 					yield return PutNextRectangle(rectSize);
 				}
 			}
 		}
 
-		private Size GetReactangleSize(string word, float fontSize, Font wordFont, Graphics graphics)
+		private Size GetReactangleSize(string word, Font wordFont, Graphics graphics)
 		{
-			var currentFont = new Font(wordFont.FontFamily, fontSize);
-			var size = graphics.MeasureString(word, currentFont);
-			return new Size((int)Math.Round(size.Width), (int)Math.Round(size.Height));
+			var size = graphics.MeasureString(word, wordFont);
+			return new Size((int) Math.Round(size.Width), (int) Math.Round(size.Height));
 		}
 
 		private Rectangle PutNextRectangle(Size rectangleSize)
@@ -76,14 +72,14 @@ namespace TagsCloudVisualization
 
 		private Point GetCoordinatesForRectangleInTheCenter(Size rectangleSize)
 		{
-			return new Point((int)Math.Round(Center.X - rectangleSize.Width / 2.0), (int)Math.Round(Center.Y - rectangleSize.Height / 2.0));
+			return new Point((int) Math.Round(Center.X - rectangleSize.Width / 2.0),
+				(int) Math.Round(Center.Y - rectangleSize.Height / 2.0));
 		}
 
 		private Point GetCoordinatesForRectangle()
 		{
 			Spiral.UpdateCoordinates();
 			return PolarToCortesianCoordinates(Spiral.Radius, Spiral.Angle);
-
 		}
 
 		private bool CheckForIntersectionWithPreviousRectangles(Rectangle rectangle)
@@ -105,10 +101,7 @@ namespace TagsCloudVisualization
 		{
 			var x = Center.X + Math.Round(radius * Math.Cos(CommonUsefulMethods.DegreeesToRadians(angle)));
 			var y = Center.Y - Math.Round(radius * Math.Sin(CommonUsefulMethods.DegreeesToRadians(angle)));
-			return new Point((int)x, (int)y);
+			return new Point((int) x, (int) y);
 		}
-
 	}
-
-
 }

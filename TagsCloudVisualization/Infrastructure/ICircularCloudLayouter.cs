@@ -11,6 +11,6 @@ namespace TagsCloudVisualization.Infrastructure
 	{
 		IEnumerable<Rectangle> PutRectangles();
 
-		string[] GetWords();
+		Word[] GetWords();
 	}
 }

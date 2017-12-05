@@ -21,8 +21,8 @@ namespace TagsCloudVisualization
 		public Size ImageSize => new Size(1000, 800);
 
 		public Font WordsFont => new Font(FontFamily.GenericMonospace, 30);
-
-		public float[] MinAndMaxFonts => new[] { 10f, 20f };
+		public float MaxFontSize => 10f;
+		public float MinFontSize => 20f;
 
 		public ImageFormat ImageFormat => ImageFormat.Bmp;
 

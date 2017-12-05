@@ -10,12 +10,17 @@ namespace TagsCloudVisualization
 {
 	public class TxtReader : IReader
 	{
-		private string FileName { get; set; }
-
-		public void SetFileName(string fileName)
+		public TxtReader(string fileName)
 		{
 			FileName = fileName;
 		}
+
+		private string FileName { get; set; }
+
+		//public void SetFileName(string fileName)
+		//{
+		//	FileName = fileName;
+		//}
 
 		public string[] ReadFile()
 		{

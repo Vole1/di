@@ -10,6 +10,5 @@ namespace TagsCloudVisualization.Infrastructure
 	{
 		string[] ReadFile();
 
-		void SetFileName(string fileName);
 	}
 }

@@ -10,6 +10,8 @@ namespace TagsCloudVisualization.Infrastructure
 {
 	interface IVisualizer
 	{
-		void Visualize();
+		void Visualize(string imageName);
+
+		Bitmap GetImage();
 	}
 }

@@ -71,6 +71,8 @@
     <Compile Include="CommonUsefulMethods.cs" />
     <Compile Include="DefaultImageConfig.cs" />
     <Compile Include="DefaultPreProcessorTests.cs" />
+    <Compile Include="ContainerConstructor.cs" />
+    <Compile Include="Word.cs" />
     <Compile Include="Infrastructure\ICircularCloudLayouter.cs" />
     <Compile Include="Infrastructure\IImageConfig.cs" />
     <Compile Include="Infrastructure\IPreProcessor.cs" />
@@ -91,7 +93,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

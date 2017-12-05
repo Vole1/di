@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using NHunspell;
 using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualization
@@ -16,18 +17,9 @@ namespace TagsCloudVisualization
 		public static void Main()
 		{
 			GenerateInput();
-			var builder = new ContainerBuilder();
-			builder.RegisterType<CircularCloudLayouter>().As<ICircularCloudLayouter>();
-			builder.RegisterType<DefaultImageConfig>().As<IImageConfig>();
-			builder.RegisterType<DefaultPreProcessor>().As<IPreProcessor>();
-			builder.RegisterType<Visualizer>().As<IVisualizer>();
-			builder.RegisterType<TxtReader>().As<IReader>().SingleInstance();
-
-			var container = builder.Build();
-			var reader = container.Resolve<IReader>();
-			reader.SetFileName("in.txt");
-			var visualizer = container.Resolve<IVisualizer>();
-			visualizer.Visualize();
+			var containerConstructor = new ContainerConstructor();
+			containerConstructor.Contruct("in.txt");
+			containerConstructor.SaveImage("img1");
 
 		}
 
@@ -35,13 +27,12 @@ namespace TagsCloudVisualization
 		{
 			using (var streamWriter = new StreamWriter("in.txt"))
 			{
-				var words = new[] {"lolo", "lala", "igoGo", "eeeeeeeeeeelka" };
-				foreach (var word in words)
-				{
-					streamWriter.WriteLineAsync(word);
-				}
-			}
+				var words = new[] {"Hello", "my", "Dear", "Friend", "How", "Are", "you",
+					"what", "can", "you", "tell", "me", "about", "yourself" };
 
+				foreach (var word in words)
+					streamWriter.WriteLineAsync(word);
+			}
 		}
 	}
 }

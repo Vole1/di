@@ -17,7 +17,8 @@ namespace TagsCloudVisualization.Infrastructure
 		Size ImageSize { get; }
 		Font WordsFont { get; }
 
-		float[] MinAndMaxFonts { get; }
+		float MaxFontSize { get; }
+		float MinFontSize { get; }
 
 		ImageFormat ImageFormat { get; }
 

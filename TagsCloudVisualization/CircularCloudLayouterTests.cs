@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
 		{
 			var words = new[] { "hi", "heRe", "There", "mE", "in", "other", "TREE", "beautiful", "welL" };
 			center = new Point(900, 500);
-			ccl = new CircularCloudLayouter(new DefaultPreProcessor(new TestReader{Input = words }), new DefaultImageConfig());
+			ccl = new CircularCloudLayouter(new DefaultPreProcessor(new TestReader{Input = words }, new DefaultImageConfig()), new DefaultImageConfig());
 
 			rectangles = ccl.PutRectangles().ToArray();
 		}
@@ -51,9 +51,8 @@ namespace TagsCloudVisualization
 				var graphics = Graphics.FromImage(bmp);
 				graphics.Clear(Color.Black);
 				foreach (var rectangle in rectangles)
-				{
 					graphics.DrawRectangle(new Pen(Color.Chartreuse), rectangle);
-				}
+
 				var path = AppDomain.CurrentDomain.BaseDirectory + "\\Test " + TestContext.CurrentContext.Test.MethodName +
 				           " Failure.bmp";
 				bmp.Save(path);
@@ -115,7 +114,6 @@ namespace TagsCloudVisualization
 			var top = rectangles.Select(r => r.Top).Max();
 			var left = rectangles.Select(r => r.Left).Min();
 			var right = rectangles.Select(r => r.Right).Max();
-
 
 			radiusesFromDifferentParties.Add(center.Y - bottom);
 			radiusesFromDifferentParties.Add(top - center.Y);

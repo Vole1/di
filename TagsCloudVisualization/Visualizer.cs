@@ -21,7 +21,13 @@ namespace TagsCloudVisualization
 			CircularCloudLayouter = circularCloudLayouter;
 		}
 
-		public void Visualize()
+		public void Visualize(string imageName)
+		{
+			var bmp = GetImage();
+			bmp.Save(imageName + "." + ImageConfig.ImageFormat.ToString().ToLower(), ImageConfig.ImageFormat);
+		}
+
+		public Bitmap GetImage()
 		{
 			var bmp = new Bitmap(ImageConfig.ImageSize.Width, ImageConfig.ImageSize.Height);
 			var drawingGraphics = Graphics.FromImage(bmp);
@@ -33,16 +39,11 @@ namespace TagsCloudVisualization
 			var i = 0;
 			foreach (var rectangle in rectangles)
 			{
-				var rectangle1 = new Rectangle(rectangle.Location, new Size(rectangle.Width+20, rectangle.Height));
 				var word = words[i];
-				float fontSize = ImageConfig.MinAndMaxFonts[1] -
-				                 (ImageConfig.MinAndMaxFonts[1] - ImageConfig.MinAndMaxFonts[0]) / (words.Length) * i;
-				var currentFont = new Font(ImageConfig.WordsFont.FontFamily, fontSize);
-				drawingGraphics.DrawString(words[i], currentFont, ImageConfig.GetWordBrush(word), rectangle);
-
+				drawingGraphics.DrawString(word.Value, word.Font, word.Brush, rectangle);
 				i++;
 			}
-			bmp.Save("picture3.bmp", ImageConfig.ImageFormat);
+			return bmp;
 		}
 	}
 }
