@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Infrastructure;
 
@@ -19,24 +20,29 @@ namespace TagsCloudVisualization
 		[SetUp]
 		public void SetUp()
 		{
-			var words = new[] { "hi", "heRe", "There", "mE", "in", "other", "TREE", "beautiful", "welL" };
 			center = new Point(900, 500);
-			ccl = new CircularCloudLayouter(new DefaultPreProcessor(new TestReader{Input = words }, new DefaultImageConfig()), new DefaultImageConfig());
+			
+			var words = new[]
+			{
+				new Word("hi", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
+				new Word("here", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
+				new Word("there", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
+				new Word("other", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
+				new Word("tree", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
+				new Word("beautiful", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
+				new Word("well", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue))
+			};
+
+			var imgConfMock = new Mock<IImageConfig>();
+			imgConfMock.SetupGet(rd => rd.CloudCenter).Returns(center);
+
+			var preprocessorMock = new Mock<IPreProcessor>();
+			preprocessorMock.Setup(rd => rd.PreProcess()).Returns(words);
+
+
+			ccl = new CircularCloudLayouter(preprocessorMock.Object, imgConfMock.Object);
 
 			rectangles = ccl.PutRectangles().ToArray();
-		}
-		class TestReader : IReader
-		{
-			public string[] Input { get; set; }
-
-			public void SetFileName(string fileName)
-			{
-			}
-
-			public string[] ReadFile()
-			{
-				return Input;
-			}
 		}
 
 		[TearDown]

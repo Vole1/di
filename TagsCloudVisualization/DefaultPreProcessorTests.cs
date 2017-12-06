@@ -7,6 +7,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization.Infrastructure;
+using Moq;
 
 namespace TagsCloudVisualization
 {
@@ -16,8 +17,7 @@ namespace TagsCloudVisualization
 		[Test]
 		public void ForValidInputWithRestrictedWords_Preprocessor_RetrunsValidOutput()
 		{
-			var defaultImageConfig = new DefaultImageConfig();
-			var input = new[] {"hi", "heRe", "There", "mE", "in", "other", "TREE", "beautiful", "welL"};
+			var input = new[] { "hi", "heRe", "There", "mE", "in", "other", "TREE", "beautiful", "welL" };
 			var wordsTuples = new[]
 			{
 				new Tuple<string, int>("hi", 1),
@@ -28,25 +28,14 @@ namespace TagsCloudVisualization
 				new Tuple<string, int>("beautiful", 1),
 				new Tuple<string, int>("well", 1)
 			};
-			var output = wordsTuples
-				.Select(tuple => GetWordFromString(defaultImageConfig, tuple.Item1, tuple.Item2, wordsTuples.Length)).ToArray();
 
-			var testReader = new TestReader {Input = input};
-			var dpp = new DefaultPreProcessor(testReader, new DefaultImageConfig());
-			var result = dpp.PreProcess();
-			result.ShouldAllBeEquivalentTo(output, options => options.Including(obj =>
-				obj.SelectedMemberInfo.MemberType == typeof(Brush) ||
-				obj.SelectedMemberInfo.MemberType == typeof(string) ||
-				obj.SelectedMemberInfo.MemberType == typeof(Font) ||
-				obj.SelectedMemberInfo.MemberType == typeof(float) ||
-				obj.SelectedMemberInfo.MemberType == typeof(Color)));
+			PerformTest(input, wordsTuples);
 		}
 
 		[Test]
 		public void ForValidRepeatingLowerCaseInput_Preprocessor_RetrunsValidOutput()
 		{
-			var defaultImageConfig = new DefaultImageConfig();
-			var input = new[] {"hi", "heRe", "beautiful", "hi", "hi", "in", "other", "TREE", "in", "beautiful", "in", "welL"};
+			var input = new[] { "hi", "heRe", "beautiful", "hi", "hi", "in", "other", "TREE", "in", "beautiful", "in", "welL" };
 			var wordsTuples = new[]
 			{
 				new Tuple<string, int>("hi", 3),
@@ -56,11 +45,21 @@ namespace TagsCloudVisualization
 				new Tuple<string, int>("tree", 1),
 				new Tuple<string, int>("well", 1)
 			};
+
+			PerformTest(input, wordsTuples);
+		}
+
+		private void PerformTest(string[] input, Tuple<string, int>[] wordsTuples)
+		{
+			var defaultImageConfig = new DefaultImageConfig();
+			
 			var output = wordsTuples
 				.Select(tuple => GetWordFromString(defaultImageConfig, tuple.Item1, tuple.Item2, wordsTuples.Length)).ToArray();
 
-			var testReader = new TestReader {Input = input};
-			var dpp = new DefaultPreProcessor(testReader, new DefaultImageConfig());
+			var readerMock = new Mock<IReader>();
+			readerMock.Setup(rd => rd.ReadFile()).Returns(input);
+
+			var dpp = new DefaultPreProcessor(readerMock.Object, defaultImageConfig);
 			var result = dpp.PreProcess();
 			result.ShouldAllBeEquivalentTo(output, options => options.Including(obj =>
 				obj.SelectedMemberInfo.MemberType == typeof(Brush) ||
@@ -74,20 +73,6 @@ namespace TagsCloudVisualization
 		{
 			float fontSize = imgConfg.MinFontSize + (imgConfg.MaxFontSize - imgConfg.MinFontSize) * wordCount / wordsCount;
 			return new Word(wordValue, new Font(imgConfg.WordsFont.FontFamily, fontSize), imgConfg.GetWordBrush(wordValue));
-		}
-
-		private class TestReader : IReader
-		{
-			public string[] Input { get; set; }
-
-			public void SetFileName(string fileName)
-			{
-			}
-
-			public string[] ReadFile()
-			{
-				return Input;
-			}
 		}
 	}
 }
