@@ -21,28 +21,26 @@ namespace TagsCloudVisualization
 		public void SetUp()
 		{
 			center = new Point(900, 500);
-			
-			var words = new[]
+
+			var rnd = new Random();
+			var sizes = new[]
 			{
-				new Word("hi", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
-				new Word("here", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
-				new Word("there", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
-				new Word("other", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
-				new Word("tree", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
-				new Word("beautiful", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue)),
-				new Word("well", new Font(FontFamily.GenericMonospace, 10f), new SolidBrush(Color.AliceBlue))
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100)),
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100)),
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100)),
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100)),
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100)),
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100)),
+				new Size(rnd.Next(20, 100), rnd.Next(20, 100))
 			};
 
 			var imgConfMock = new Mock<IImageConfig>();
 			imgConfMock.SetupGet(rd => rd.CloudCenter).Returns(center);
 
-			var preprocessorMock = new Mock<IPreProcessor>();
-			preprocessorMock.Setup(rd => rd.PreProcess()).Returns(words);
 
+			ccl = new CircularCloudLayouter(imgConfMock.Object);
 
-			ccl = new CircularCloudLayouter(preprocessorMock.Object, imgConfMock.Object);
-
-			rectangles = ccl.PutRectangles().ToArray();
+			rectangles = ccl.PutRectangles(sizes).ToArray();
 		}
 
 		[TearDown]
@@ -51,7 +49,7 @@ namespace TagsCloudVisualization
 			var testResult = TestContext.CurrentContext.Result.Outcome;
 
 			if (Equals(testResult, ResultState.Failure) ||
-			    Equals(testResult == ResultState.Error))
+				Equals(testResult == ResultState.Error))
 			{
 				var bmp = new Bitmap(1920, 1080);
 				var graphics = Graphics.FromImage(bmp);
@@ -60,7 +58,7 @@ namespace TagsCloudVisualization
 					graphics.DrawRectangle(new Pen(Color.Chartreuse), rectangle);
 
 				var path = AppDomain.CurrentDomain.BaseDirectory + "\\Test " + TestContext.CurrentContext.Test.MethodName +
-				           " Failure.bmp";
+						   " Failure.bmp";
 				bmp.Save(path);
 
 				Console.WriteLine("Tag cloud visualization saved to file {0}", path);
@@ -75,8 +73,8 @@ namespace TagsCloudVisualization
 
 			var rectangleSquareSum = rectangles.Select(r => r.Width * r.Height).Sum();
 
-			var mincircleSquare = (int) Math.Round(Math.PI * Math.Pow(averageRadius - radiusDelta, 2));
-			var maxcircleSquare = (int) Math.Round(Math.PI * Math.Pow(averageRadius + radiusDelta, 2));
+			var mincircleSquare = (int)Math.Round(Math.PI * Math.Pow(averageRadius - radiusDelta, 2));
+			var maxcircleSquare = (int)Math.Round(Math.PI * Math.Pow(averageRadius + radiusDelta, 2));
 
 			rectangleSquareSum.Should().BeInRange(mincircleSquare, maxcircleSquare);
 		}
@@ -85,12 +83,12 @@ namespace TagsCloudVisualization
 		public void Rectangles_ShouldNotCross_WithEachOther()
 		{
 			for (var i = 0; i < rectangles.Length; i++)
-			for (var j = 0; j < rectangles.Length; j++)
-			{
-				if (i == j)
-					continue;
-				rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
-			}
+				for (var j = 0; j < rectangles.Length; j++)
+				{
+					if (i == j)
+						continue;
+					rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+				}
 		}
 
 		[TestCase(10)]

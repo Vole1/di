@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization.Infrastructure
 {
-	interface IVisualizer
+	public interface IVisualizer
 	{
-		void Visualize(string imageName);
+		void Visualize(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles);
 
-		Bitmap GetImage();
+		//Bitmap GetImage(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles);
 	}
 }

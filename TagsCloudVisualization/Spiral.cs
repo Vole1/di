@@ -8,24 +8,30 @@ namespace TagsCloudVisualization
 {
 	public class Spiral
 	{
-		public int Radius { get; private set; }
-		private const int deltaRadius = 3;
-		public int Angle { get; private set; }
-		private const int deltaAngle = 7;
+		private int Radius { get; set; }
+		private const int DeltaRadius = 3;
+		private int Angle { get; set; }
+		private const int DeltaAngle = 5;
 		public Spiral()
 		{
 			Radius = 0;
 			Angle = 0;
 		}
 
-		public void UpdateCoordinates()
+		private void UpdateCoordinates()
 		{
-			Angle += deltaAngle;
+			Angle += DeltaAngle;
 			if (Angle >= 360)
 			{
 				Angle %= 360;
-				Radius += deltaRadius;
+				Radius += DeltaRadius;
 			}
+		}
+
+		public Tuple<int, int> GetNextCoordinates()
+		{
+			UpdateCoordinates();
+			return new Tuple<int, int>(Radius, Angle);
 		}
 	}
 }

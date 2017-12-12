@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac;
-using NHunspell;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualization
@@ -17,10 +17,8 @@ namespace TagsCloudVisualization
 		public static void Main()
 		{
 			GenerateInput();
-			var containerConstructor = new ContainerConstructor();
-			containerConstructor.Contruct("in.txt");
-			containerConstructor.SaveImage("img1");
-
+			var container = new ContainerConstructor();
+			container.Run("in.txt");
 		}
 
 		private static void GenerateInput()

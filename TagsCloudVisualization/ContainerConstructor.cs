@@ -1,47 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac;
-using Autofac.Core;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
+using FluentAssertions;
 using TagsCloudVisualization.Infrastructure;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace TagsCloudVisualization
 {
 	class ContainerConstructor
 	{
-		private readonly IContainer container;
+		private WindsorContainer Container { get; }
+
 		public ContainerConstructor()
 		{
-			var builder = new ContainerBuilder();
-			builder.RegisterType<CircularCloudLayouter>().As<ICircularCloudLayouter>();
-			builder.RegisterType<DefaultImageConfig>().As<IImageConfig>();
-			builder.RegisterType<DefaultPreProcessor>().As<IPreProcessor>();
-			builder.RegisterType<Visualizer>().As<IVisualizer>();
-			builder.RegisterType<TxtReader>().As<IReader>().SingleInstance();
+			Container = new WindsorContainer();
+			Container.Register(Component.For<ICompositionRoot>().ImplementedBy<CompositionRoot>());
 
-			container = builder.Build();
+			Container.Register(Component.For<ILayouter>().ImplementedBy<CircularCloudLayouter>());
+			Container.Register(Component.For<IImageConfig>().ImplementedBy<DefaultImageConfig>());
+			Container.Register(Component.For<IParser>().ImplementedBy<DefaultParser>());
+			Container.Register(Component.For<IFilter>().ImplementedBy<DefaultFilter>());
+			Container.Register(Component.For<IPreProcessor>().ImplementedBy<DefaultPreProcessor>());
+			Container.Register(Component.For<IVisualizer>().ImplementedBy<Visualizer>());
 		}
 
-		public void Contruct(string filename)
-		{
-			container.Resolve<IReader>(new NamedParameter("fileName", filename));
-			var reader = container.Resolve<IReader>();
-			//reader.SetFileName("in.txt");
+	    public void Run(string inputFileName)
+	    {
+		    Container.Register(Component.For<IReader>().ImplementedBy<TxtReader>().DependsOn(Dependency.OnValue("filename", inputFileName)));
+			var root = Container.Resolve<ICompositionRoot>();
+		    root.Run();
 		}
-
-		public void SaveImage(string imageName)
-		{
-			var visualizer = container.Resolve<IVisualizer>();
-			visualizer.Visualize(imageName);
-		}
-
-		public Bitmap GetImage(string imageName)
-		{
-			var visualizer = container.Resolve<IVisualizer>();
-			return visualizer.GetImage();
-		}
-	}
+    }
 }

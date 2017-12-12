@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-
 namespace TagsCloudVisualization.Infrastructure
 {
-	public interface IPreProcessor
+	public interface ILayouter
 	{
-		string PreProcess(string readStrings);
+		IEnumerable<Rectangle> PutRectangles(IEnumerable<Size> sizes);
 	}
 }

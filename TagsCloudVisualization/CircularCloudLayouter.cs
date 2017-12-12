@@ -8,44 +8,25 @@ using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualization
 {
-	class CircularCloudLayouter : ICircularCloudLayouter
+	class CircularCloudLayouter : ILayouter
 	{
 		private List<Rectangle> InsertedRectangles { get; }
 		private Spiral Spiral { get; }
 
-		private readonly Word[] wordsIn;
-		private IPreProcessor PreProcessor { get; }
-
 		private Point Center { get; }
 
-		public Word[] GetWords() => wordsIn;
 
-		public CircularCloudLayouter(IPreProcessor preProcessor, IImageConfig imageConfig)
+		public CircularCloudLayouter(IImageConfig imageConfig)
 		{
-			PreProcessor = preProcessor;
 			Center = imageConfig.CloudCenter;
 			Spiral = new Spiral();
 			InsertedRectangles = new List<Rectangle>();
-			wordsIn = PreProcessor.PreProcess();
 		}
 
-		public IEnumerable<Rectangle> PutRectangles()
+		public IEnumerable<Rectangle> PutRectangles(IEnumerable<Size> sizes)
 		{
-			using (var graphics = Graphics.FromImage(new Bitmap(1, 1)))
-			{
-				foreach (var currentWord in wordsIn)
-				{
-					var strSize = GetReactangleSize(currentWord.Value, currentWord.Font, graphics);
-					var rectSize = new Size(strSize.Width + 1, strSize.Height + 1);
-					yield return PutNextRectangle(rectSize);
-				}
-			}
-		}
-
-		private Size GetReactangleSize(string word, Font wordFont, Graphics graphics)
-		{
-			var size = graphics.MeasureString(word, wordFont);
-			return new Size((int) Math.Round(size.Width), (int) Math.Round(size.Height));
+			foreach (var currentRectangle in sizes)
+				yield return PutNextRectangle(currentRectangle);
 		}
 
 		private Rectangle PutNextRectangle(Size rectangleSize)
@@ -66,29 +47,26 @@ namespace TagsCloudVisualization
 		{
 			if (InsertedRectangles.Count == 0)
 				return GetCoordinatesForRectangleInTheCenter(rectangleSize);
-
 			return GetCoordinatesForRectangle();
 		}
 
 		private Point GetCoordinatesForRectangleInTheCenter(Size rectangleSize)
 		{
-			return new Point((int) Math.Round(Center.X - rectangleSize.Width / 2.0),
-				(int) Math.Round(Center.Y - rectangleSize.Height / 2.0));
+			return new Point((int)Math.Round(Center.X - rectangleSize.Width / 2.0),
+				(int)Math.Round(Center.Y - rectangleSize.Height / 2.0));
 		}
 
 		private Point GetCoordinatesForRectangle()
 		{
-			Spiral.UpdateCoordinates();
-			return PolarToCortesianCoordinates(Spiral.Radius, Spiral.Angle);
+			var newPolarCoordinates = Spiral.GetNextCoordinates();
+			return PolarToCortesianCoordinates(newPolarCoordinates.Item1, newPolarCoordinates.Item2);
 		}
 
 		private bool CheckForIntersectionWithPreviousRectangles(Rectangle rectangle)
 		{
 			foreach (var previousRectangle in InsertedRectangles)
-			{
 				if (rectangle.IntersectsWith(previousRectangle))
 					return true;
-			}
 			return false;
 		}
 
@@ -101,7 +79,7 @@ namespace TagsCloudVisualization
 		{
 			var x = Center.X + Math.Round(radius * Math.Cos(CommonUsefulMethods.DegreeesToRadians(angle)));
 			var y = Center.Y - Math.Round(radius * Math.Sin(CommonUsefulMethods.DegreeesToRadians(angle)));
-			return new Point((int) x, (int) y);
+			return new Point((int)x, (int)y);
 		}
 	}
 }

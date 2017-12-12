@@ -8,17 +8,19 @@ using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualization
 {
-	class Word
+	public class Word
 	{
 		public string Value { get; }
 		public Font Font { get; }
 		public Brush Brush { get; }
+		public Size WordDrawingSize { get; }
 
-		public Word(string value, Font font, Brush brush)
+		public Word(string value, Font font, Brush brush, Size wordDrawingSize)
 		{
 			Value = value;
 			Font = font;
 			Brush = brush;
+			WordDrawingSize = wordDrawingSize;
 		}
 	}
 }

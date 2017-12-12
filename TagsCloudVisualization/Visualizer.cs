@@ -12,36 +12,32 @@ namespace TagsCloudVisualization
 {
 	class Visualizer : IVisualizer
 	{
-		private ICircularCloudLayouter CircularCloudLayouter { get; }
 		private IImageConfig ImageConfig { get; }
+		private string ImageName{ get; }
 
-		public Visualizer(IImageConfig imageConfig, ICircularCloudLayouter circularCloudLayouter)
+		public Visualizer(IImageConfig imageConfig, string imageName)
 		{
 			ImageConfig = imageConfig;
-			CircularCloudLayouter = circularCloudLayouter;
+			ImageName = imageName;
 		}
 
-		public void Visualize(string imageName)
+		public void Visualize(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles)
 		{
-			var bmp = GetImage();
-			bmp.Save(imageName + "." + ImageConfig.ImageFormat.ToString().ToLower(), ImageConfig.ImageFormat);
+			var bmp = GetImage(words, rectangles);
+			bmp.Save(ImageName + "." + ImageConfig.ImageFormat.ToString().ToLower(), ImageConfig.ImageFormat);
 		}
 
-		public Bitmap GetImage()
+		public Bitmap GetImage(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles)
 		{
 			var bmp = new Bitmap(ImageConfig.ImageSize.Width, ImageConfig.ImageSize.Height);
 			var drawingGraphics = Graphics.FromImage(bmp);
 			drawingGraphics.Clear(ImageConfig.BackGroundColor);
 
-			var rectangles = CircularCloudLayouter.PutRectangles();
-			var words = CircularCloudLayouter.GetWords();
-
-			var i = 0;
-			foreach (var rectangle in rectangles)
+			foreach (var wordAndRectangle in words.Zip(rectangles, (word, rectangle) => new {word, rectangle}))
 			{
-				var word = words[i];
+				var word = wordAndRectangle.word;
+				var rectangle = wordAndRectangle.rectangle;
 				drawingGraphics.DrawString(word.Value, word.Font, word.Brush, rectangle);
-				i++;
 			}
 			return bmp;
 		}
