@@ -55,7 +55,8 @@ namespace TagsCloudVisualization
 		private Word GetWordFromString(IImageConfig imgConfg, string wordValue, int wordCount, int wordsCount)
 		{
 			float fontSize = imgConfg.MinFontSize + (imgConfg.MaxFontSize - imgConfg.MinFontSize) * wordCount / wordsCount;
-			return new Word(wordValue, new Font(imgConfg.WordsFont.FontFamily, fontSize), imgConfg.GetWordBrush(wordValue), new Size(1,1));
+			var wordSize = new Size(1,1);
+			return new Word(wordValue, new Font(imgConfg.WordsFont.FontFamily, fontSize), imgConfg.GetWordBrush(wordSize), wordSize);
 		}
 	}
 }

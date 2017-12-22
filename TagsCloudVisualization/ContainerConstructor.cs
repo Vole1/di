@@ -21,19 +21,27 @@ namespace TagsCloudVisualization
 			Container = new WindsorContainer();
 			Container.Register(Component.For<ICompositionRoot>().ImplementedBy<CompositionRoot>());
 
-			Container.Register(Component.For<ILayouter>().ImplementedBy<CircularCloudLayouter>());
-			Container.Register(Component.For<IImageConfig>().ImplementedBy<DefaultImageConfig>());
+			Container.Register(Component.For<IConfigReader>().ImplementedBy<DefaultImageConfigReader>());
+			//Container.Register(Component.For<IImageConfig>().ImplementedBy<DefaultImageConfig>());
 			Container.Register(Component.For<IParser>().ImplementedBy<DefaultParser>());
 			Container.Register(Component.For<IFilter>().ImplementedBy<DefaultFilter>());
 			Container.Register(Component.For<IPreProcessor>().ImplementedBy<DefaultPreProcessor>());
+			Container.Register(Component.For<ILayouter>().ImplementedBy<CircularCloudLayouter>());
 			Container.Register(Component.For<IVisualizer>().ImplementedBy<Visualizer>());
 		}
 
-	    public void Run(string inputFileName)
-	    {
-		    Container.Register(Component.For<IReader>().ImplementedBy<TxtReader>().DependsOn(Dependency.OnValue("filename", inputFileName)));
+		public Result<bool> Run(string inputFileName, string configFileName)
+		{
+			Container.Register(Component.For<IWordReader>().ImplementedBy<WordReaderFromTxt>().DependsOn(Dependency.OnValue("fileName", inputFileName)));
+
+			var imageConfigResult = Container.Resolve<IConfigReader>().GetConfigFile(configFileName);
+			if (!imageConfigResult.IsSuccess)
+				return new Result<bool>(imageConfigResult.Error);
+
+			Container.Register(Component.For<IImageConfig>().Instance(imageConfigResult.GetValue()));
+
 			var root = Container.Resolve<ICompositionRoot>();
-		    root.Run();
+			return root.Run();
 		}
-    }
+	}
 }

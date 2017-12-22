@@ -13,25 +13,23 @@ namespace TagsCloudVisualization
 	class Visualizer : IVisualizer
 	{
 		private IImageConfig ImageConfig { get; }
-		private string ImageName{ get; }
 
-		public Visualizer(IImageConfig imageConfig, string imageName)
+		public Visualizer(IImageConfig imageConfig)
 		{
 			ImageConfig = imageConfig;
-			ImageName = imageName;
 		}
 
-		public void Visualize(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles)
+		public void Visualize(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles, string imageName)
 		{
 			var bmp = GetImage(words, rectangles);
-			bmp.Save(ImageName + "." + ImageConfig.ImageFormat.ToString().ToLower(), ImageConfig.ImageFormat);
+			bmp.Save(imageName + "." + ImageConfig.ImageFormat.ToString().ToLower(), ImageConfig.ImageFormat);
 		}
 
 		public Bitmap GetImage(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles)
 		{
 			var bmp = new Bitmap(ImageConfig.ImageSize.Width, ImageConfig.ImageSize.Height);
 			var drawingGraphics = Graphics.FromImage(bmp);
-			drawingGraphics.Clear(ImageConfig.BackGroundColor);
+			drawingGraphics.Clear(ImageConfig.BackgroundColor);
 
 			foreach (var wordAndRectangle in words.Zip(rectangles, (word, rectangle) => new {word, rectangle}))
 			{

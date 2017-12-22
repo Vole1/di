@@ -9,34 +9,42 @@ namespace TagsCloudVisualization
 {
 	public class CompositionRoot : ICompositionRoot
 	{
-		private IReader Reader { get; }
+		private IConfigReader ConfigReader { get; }
+		private IWordReader WordReader { get; }
 		private IFilter Filter { get; }
 		private IPreProcessor PreProcessor { get; }
 		private IParser Parser { get; }
 		public ILayouter Layouter { get; }
 		private IVisualizer Visualizer { get; }
 
-		public CompositionRoot(IReader reader, IFilter filter, IPreProcessor preProcessor, IParser parser, ILayouter layouter, IVisualizer visualizer)
+		public CompositionRoot(IConfigReader configReader, IWordReader wordReader, IFilter filter, IPreProcessor preProcessor, IParser parser, ILayouter layouter, IVisualizer visualizer)
 		{
-			Reader = reader;
+			WordReader = wordReader;
 			Filter = filter;
 			PreProcessor = preProcessor;
 			Parser = parser;
 			Layouter = layouter;
 			Visualizer = visualizer;
+			ConfigReader = configReader;
 		}
 
-		public void Run()
+		public Result<bool> Run()
 		{
-			var words = Parser.ParseWords(Reader.ReadFile().Select(s => PreProcessor.PreProcess(s)).Where(x => Filter.Validate(x))).ToList();
-			var rectangles = Layouter.PutRectangles(words.Select(w => w.WordDrawingSize));
-			Visualizer.Visualize(words, rectangles);
-		}
+			var stringsParseResult = WordReader.ReadWordFile();
+			if (!stringsParseResult.IsSuccess)
+				return new Result<bool>(stringsParseResult.Error);
 
+			var words = Parser.ParseWords(WordReader.GetResult().Select(s => PreProcessor.PreProcess(s)).Where(x => Filter.Validate(x))).ToList();
+			var rectanglesResult = Layouter.PutRectangles(words.Select(w => w.WordDrawingSize));
+			if (!rectanglesResult.IsSuccess)
+				return new Result<bool>(rectanglesResult.Error);
+			Visualizer.Visualize(words, rectanglesResult.GetValue(), "img1");
+			return new Result<bool>(null);
+		}
 	}
 
 	interface ICompositionRoot
 	{
-		void Run();
+		Result<bool> Run();
 	}
 }

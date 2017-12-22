@@ -17,8 +17,10 @@ namespace TagsCloudVisualization
 		public static void Main()
 		{
 			GenerateInput();
+			GenerateConfigInput();
+			
 			var container = new ContainerConstructor();
-			container.Run("in.txt");
+			container.Run("in.txt", "config.txt");
 		}
 
 		private static void GenerateInput()
@@ -30,6 +32,25 @@ namespace TagsCloudVisualization
 
 				foreach (var word in words)
 					streamWriter.WriteLineAsync(word);
+			}
+		}
+
+		private static void GenerateConfigInput()
+		{
+			using (var streamWriter = new StreamWriter("config.txt"))
+			{
+				var lines = new[]
+				{
+					"Brush color : Red",
+					"Background color : Black",
+					"Image size : (900, 900)",
+					"Words font : \"Arial\"",
+					"Font sizes : (10, 20)",
+					"Image format : png"
+				};
+
+				foreach (var line in lines)
+					streamWriter.WriteLineAsync(line);
 			}
 		}
 	}

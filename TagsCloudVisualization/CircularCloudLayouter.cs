@@ -10,6 +10,7 @@ namespace TagsCloudVisualization
 {
 	class CircularCloudLayouter : ILayouter
 	{
+		public Size ImageSize { get; }
 		private List<Rectangle> InsertedRectangles { get; }
 		private Spiral Spiral { get; }
 
@@ -19,14 +20,31 @@ namespace TagsCloudVisualization
 		public CircularCloudLayouter(IImageConfig imageConfig)
 		{
 			Center = imageConfig.CloudCenter;
+			ImageSize = imageConfig.ImageSize;
 			Spiral = new Spiral();
 			InsertedRectangles = new List<Rectangle>();
 		}
 
-		public IEnumerable<Rectangle> PutRectangles(IEnumerable<Size> sizes)
+		public Result<List<Rectangle>> PutRectangles(IEnumerable<Size> sizes)
 		{
-			foreach (var currentRectangle in sizes)
-				yield return PutNextRectangle(currentRectangle);
+			var resultList = new List<Rectangle>();
+			foreach (var currentRectangleSize in sizes)
+			{
+				var currentRectangle = PutNextRectangle(currentRectangleSize);
+				if (!RectangleIsInImage(currentRectangle))
+					return new Result<List<Rectangle>>("Words have been positiond out of the image.");
+				resultList.Add(currentRectangle);
+			}
+			return new Result<List<Rectangle>>(null, resultList);
+		}
+
+		private bool RectangleIsInImage(Rectangle rectangleToCheck)
+		{
+			return !rectangleToCheck.IntersectsWith(new Rectangle(-1, 0, 1, ImageSize.Height)) ||
+				   !rectangleToCheck.IntersectsWith(new Rectangle(0, -1, ImageSize.Width, 1)) ||
+				   !rectangleToCheck.IntersectsWith(new Rectangle(ImageSize.Width + 1, 0, 1, ImageSize.Height)) ||
+				   !rectangleToCheck.IntersectsWith(new Rectangle(0, ImageSize.Height + 1, ImageSize.Width, 1));
+
 		}
 
 		private Rectangle PutNextRectangle(Size rectangleSize)

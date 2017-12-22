@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
 				var wordDrawingSizeF = graphics.MeasureString(word, wordFont);
 				var wordDrawingSize = new Size((int)Math.Round(wordDrawingSizeF.Width)+1, (int)Math.Round(wordDrawingSizeF.Height)+1);
 
-				return new Word(word, wordFont, ImageConfig.GetWordBrush(word), wordDrawingSize);
+				return new Word(word, wordFont, ImageConfig.GetWordBrush(wordDrawingSize), wordDrawingSize);
 			});
 		}
 	}

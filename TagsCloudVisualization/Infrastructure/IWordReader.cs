@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization.Infrastructure
 {
-	public interface IReader
+	public interface IWordReader
 	{
-		string[] ReadFile();
+		Result<string[]> ReadWordFile();
 
+		string[] GetResult();
 	}
 }

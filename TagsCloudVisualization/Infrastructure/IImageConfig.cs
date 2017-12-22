@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization.Infrastructure
 {
-	interface IImageConfig
+	public interface IImageConfig
 	{
-		Brush GetWordBrush(string word);
+		Brush GetWordBrush(Size wordSize);
 
-		Color BackGroundColor { get; }
+		Color BackgroundColor { get; }
 
 		Size ImageSize { get; }
 		Font WordsFont { get; }

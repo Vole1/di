@@ -76,33 +76,30 @@
     <Compile Include="CircularCloudLayouterTests.cs" />
     <Compile Include="CommonUsefulMethods.cs" />
     <Compile Include="CompositionRoot.cs" />
+    <Compile Include="DefaultImageConfigReader.cs" />
     <Compile Include="DefaultFilter.cs" />
     <Compile Include="DefaultImageConfig.cs" />
     <Compile Include="DefaultParser.cs" />
     <Compile Include="DefaultParserTests.cs" />
+    <Compile Include="Infrastructure\IConfigReader.cs" />
     <Compile Include="Infrastructure\IFilter.cs" />
     <Compile Include="Infrastructure\IParser.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="Word.cs" />
     <Compile Include="Infrastructure\ILayouter.cs" />
     <Compile Include="Infrastructure\IImageConfig.cs" />
     <Compile Include="Infrastructure\IPreProcessor.cs" />
-    <Compile Include="Infrastructure\IReader.cs" />
+    <Compile Include="Infrastructure\IWordReader.cs" />
     <Compile Include="DefaultPreProcessor.cs" />
     <Compile Include="Infrastructure\IVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spiral.cs" />
-    <Compile Include="TxtReader.cs" />
+    <Compile Include="WordReaderFromTxt.cs" />
     <Compile Include="Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContainerConstructor.cs" />
-    <None Include="en_US.aff">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="en_US.dic">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

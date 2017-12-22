@@ -10,7 +10,7 @@ namespace TagsCloudVisualization.Infrastructure
 {
 	public interface IVisualizer
 	{
-		void Visualize(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles);
+		void Visualize(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles, string imageName);
 
 		//Bitmap GetImage(IEnumerable<Word> words, IEnumerable<Rectangle> rectangles);
 	}

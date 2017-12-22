@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
 
 			ccl = new CircularCloudLayouter(imgConfMock.Object);
 
-			rectangles = ccl.PutRectangles(sizes).ToArray();
+			rectangles = ccl.PutRectangles(sizes).GetValue().ToArray();
 		}
 
 		[TearDown]
